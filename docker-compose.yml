@@ -1,0 +1,88 @@
+version: '3.8'
+
+x-environment-defaults: &environment-defaults
+  DEBUG: "False"
+  DB_NAME: "hload_db"
+  DB_USER: "hload_user"
+  DB_PASSWORD: "hload_password"
+  DB_HOST: "hload-postgres"
+  DB_PORT: 5432
+  CELERY_BROKER_URL: "redis://hload-redis:6379/0"
+  CELERY_RESULT_BACKEND: "redis://hload-redis:6379/0"
+  SECRET_KEY: "secret"
+
+services:
+  hload-frontend:
+    build:
+      context: ./hload-ui
+    ports:
+      - "3000:3000"
+    networks:
+      - hload-network
+
+  hload-backend:
+    build:
+      context: ./hload-app
+    volumes:
+      - ./hload-app:/app
+      - static_volume:/app/static
+    ports:
+      - "8000:8000"
+    networks:
+      - hload-network
+    depends_on:
+      - hload-postgres
+      - hload-redis
+      - localstack
+    environment:
+      <<: *environment-defaults
+    restart: on-failure:5
+    healthcheck:
+      test: curl -f http://localhost:8000/api/health || exit 1
+      interval: 10s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  hload-postgres:
+    image: postgres:15
+    container_name: hload-postgres
+    environment:
+      POSTGRES_DB: hload_db
+      POSTGRES_USER: hload_user
+      POSTGRES_PASSWORD: hload_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - hload-network
+
+  hload-redis:
+    image: redis:7
+    container_name: hload-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - hload-network
+
+  localstack:
+    image: localstack/localstack
+    container_name: hload-localstack
+    ports:
+      - "4566:4566"
+    environment:
+      - SERVICES=s3,cognito
+      - LOCALSTACK_API_KEY=${LOCALSTACK_API_KEY}
+    volumes:
+      - ./pipelines/localstack:/var/lib/localstack
+    networks:
+      - hload-network
+
+volumes:
+  postgres_data:
+  static_volume:
+
+networks:
+  hload-network:
+    driver: bridge
