@@ -1,15 +1,15 @@
 version: '3.8'
 
 x-environment-defaults: &environment-defaults
-  DEBUG: "False"
-  DB_NAME: "hload_db"
-  DB_USER: "hload_user"
-  DB_PASSWORD: "hload_password"
-  DB_HOST: "hload-postgres"
-  DB_PORT: 5432
-  CELERY_BROKER_URL: "redis://hload-redis:6379/0"
-  CELERY_RESULT_BACKEND: "redis://hload-redis:6379/0"
-  SECRET_KEY: "secret"
+  DEBUG: "${DEBUG}"
+  DB_NAME: "${DB_NAME}"
+  DB_USER: "${DB_USER}"
+  DB_PASSWORD: "${DB_PASSWORD}"
+  DB_HOST: "${DB_HOST}"
+  DB_PORT: "${DB_PORT}"
+  CELERY_BROKER_URL: "${CELERY_BROKER_URL}"
+  CELERY_RESULT_BACKEND: "${CELERY_RESULT_BACKEND}"
+  SECRET_KEY: "${SECRET_KEY}"
 
 services:
   hload-frontend:
@@ -45,7 +45,7 @@ services:
       start_period: 10s
 
   hload-postgres:
-    image: postgres:15
+    image: postgres:latest
     container_name: hload-postgres
     environment:
       POSTGRES_DB: hload_db
@@ -59,7 +59,7 @@ services:
       - hload-network
 
   hload-redis:
-    image: redis:7
+    image: redis:latest
     container_name: hload-redis
     ports:
       - "6379:6379"
@@ -78,6 +78,19 @@ services:
       - ./pipelines/localstack:/var/lib/localstack
     networks:
       - hload-network
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - static_volume:/static
+    ports:
+      - "80:80"
+    networks:
+      - hload-network
+    depends_on:
+      - hload-frontend
+      - hload-backend
 
 volumes:
   postgres_data:
