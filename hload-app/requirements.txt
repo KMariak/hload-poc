@@ -1,7 +1,10 @@
 fastapi
 uvicorn[gunicorn]
-psycopg2
+psycopg2-binary
 redis
 celery
 python-dotenv
 localstack
+asyncpg
+sqlalchemy
+databases
