@@ -1,26 +1,20 @@
-# Use the latest LTS version of Node.js
-FROM node:18-alpine
+# Використовуємо офіційний Node.js образ
+FROM node:latest
 
-# Set the working directory inside the container
+# Встановлюємо робочу директорію всередині контейнера
 WORKDIR /app
 
-# Create package.json automatically (if it doesn't exist)
-RUN npm init -y
+# Копіюємо package.json і package-lock.json, щоб встановити залежності
+COPY package.json package-lock.json /app/
 
-# Install dependencies (you can replace this with your specific dependencies later)
-RUN npm install react react-dom react-scripts --save
+# Встановлюємо залежності
+RUN npm install
 
-# Optionally, clean up after installation
-RUN npm cache clean --force
+# Копіюємо всі файли проекту в контейнер
+COPY . /app/
 
-# Copy the rest of your application files
-COPY ../hload-ui .
-
-# Optionally, build your app for production (if needed, for example, for React or Angular)
-# RUN npm run build
-
-# Expose the port your app runs on
+# Відкриваємо порт для додатка
 EXPOSE 3000
 
-# Define the command to run your app
+# Запускаємо додаток
 CMD ["npm", "start"]
