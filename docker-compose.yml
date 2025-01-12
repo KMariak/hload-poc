@@ -48,9 +48,9 @@ services:
     image: postgres:latest
     container_name: hload-postgres
     environment:
-      POSTGRES_DB: hload_db
-      POSTGRES_USER: hload_user
-      POSTGRES_PASSWORD: hload_password
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
@@ -91,6 +91,8 @@ services:
     depends_on:
       - hload-frontend
       - hload-backend
+    environment:
+    - NGINX_ENTRYPOINT_QUIET_LOGS=1
 
 volumes:
   postgres_data:

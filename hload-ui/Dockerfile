@@ -1,20 +1,15 @@
-# Використовуємо офіційний Node.js образ
-FROM node:latest
+FROM node:18-alpine
 
-# Встановлюємо робочу директорію всередині контейнера
 WORKDIR /app
 
-# Копіюємо package.json і package-lock.json, щоб встановити залежності
-COPY package.json package-lock.json /app/
+COPY package*.json ./
 
-# Встановлюємо залежності
 RUN npm install
 
-# Копіюємо всі файли проекту в контейнер
-COPY . /app/
+COPY . .
 
-# Відкриваємо порт для додатка
-EXPOSE 3000
+RUN npm run build
 
-# Запускаємо додаток
-CMD ["npm", "start"]
+EXPOSE 5173
+
+CMD ["npm", "run", "dev"]
