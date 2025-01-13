@@ -66,6 +66,19 @@ services:
     networks:
       - hload-network
 
+  flower:
+    image: mher/flower:latest
+    container_name: hload-flower
+    ports:
+      - "5555:5555"
+    networks:
+      - hload-network
+    environment:
+      - FLOWER_BASIC_AUTH=${FLOWER_USERNAME}:${FLOWER_PASSWORD}
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
+    depends_on:
+      - hload-redis
+
   localstack:
     image: localstack/localstack
     container_name: hload-localstack

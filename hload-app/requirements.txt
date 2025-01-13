@@ -10,3 +10,4 @@ localstack
 asyncpg
 sqlalchemy
 databases
+flower

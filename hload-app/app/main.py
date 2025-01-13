@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import boto3
+from app.celery_app import add
 
 app = FastAPI()
 
@@ -34,3 +35,9 @@ def read_root():
 @app.get("/api/health")
 async def health_check():
     return {"status": "ok"}
+
+
+@app.get("/tasks/add")
+def run_task(x: int, y: int):
+    task = add.delay(x, y)
+    return {"task_id": task.id, "status": "Task sent to Celery"}
