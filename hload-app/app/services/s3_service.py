@@ -14,17 +14,15 @@ BUCKET_NAME = os.getenv('AWS_BUCKET_NAME', 'hload-bucket')
 
 
 def create_bucket_if_not_exists(bucket_name: str):
-    # Перевіряємо, чи існує бакет
     existing_buckets = s3.list_buckets()
     if not any(bucket['Name'] == bucket_name for bucket in existing_buckets['Buckets']):
-        # Створюємо бакет, якщо його немає
         s3.create_bucket(Bucket=bucket_name)
         print(f"Bucket {bucket_name} created.")
 
 
 def upload_to_s3(file_content: bytes, file_name: str) -> str:
     try:
-        create_bucket_if_not_exists(BUCKET_NAME)  # Перевірка і створення бакета
+        create_bucket_if_not_exists(BUCKET_NAME)
         s3.put_object(Bucket=BUCKET_NAME, Key=file_name, Body=file_content)
         return f"s3://{BUCKET_NAME}/{file_name}"
     except NoCredentialsError:
