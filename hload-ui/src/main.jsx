@@ -1,17 +1,11 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+import ReactDOM from 'react-dom';
 import './index.css';
+import App from './App';
 
-// Імпортуємо бібліотеку Amplify та конфігурацію
-import { Amplify } from 'aws-amplify';
-import awsExports from './aws-exports';
-
-// Ініціалізуємо Amplify
-Amplify.configure(awsExports);
-
-ReactDOM.createRoot(document.getElementById('root')).render(
+ReactDOM.render(
   <React.StrictMode>
     <App />
-  </React.StrictMode>
+  </React.StrictMode>,
+  document.getElementById('root')
 );
