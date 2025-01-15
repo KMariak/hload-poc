@@ -11,3 +11,4 @@ asyncpg
 sqlalchemy
 databases
 flower
+python-multipart
