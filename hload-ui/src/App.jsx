@@ -20,15 +20,14 @@ const App = () => {
         setLoading(true);
 
         try {
-            // Створення форми з файлом та текстом
             const formData = new FormData();
             formData.append('text', inputText);
             formData.append('file', new Blob([inputText], { type: 'text/plain' }), 'file.txt');  // Передаємо текст як файл
 
-            // Відправка запиту на сервер
+
             const response = await fetch('http://localhost:8000/generate/', {
                 method: 'POST',
-                body: formData,  // Тіло запиту - форма
+                body: formData,
             });
 
             if (!response.ok) {
@@ -37,7 +36,6 @@ const App = () => {
 
             const data = await response.json();
 
-            // Оновлення даних в UI після отримання відповіді
             setGeneratedData({
                 id: data.id || 'N/A',
                 link: data.link || 'N/A',
@@ -45,17 +43,17 @@ const App = () => {
                 status: data.status || 'N/A',
             });
 
-            // Перевірка статусу через інтервал
+
             const checkStatus = async (id) => {
                 const interval = setInterval(async () => {
                     const resultResponse = await fetch(`http://localhost:8000/records/${id}`);
                     const result = await resultResponse.json();
 
                     if (result.status === 'done') {
-                        setGeneratedData(result);  // Оновлення статусу в UI
-                        clearInterval(interval);  // Завершення інтервалу
+                        setGeneratedData(result);
+                        clearInterval(interval);
                     }
-                }, 3000);  // Перевірка кожні 3 секунди
+                }, 11000);
             };
 
             checkStatus(data.id);  // Перевіряємо статус

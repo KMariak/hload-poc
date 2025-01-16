@@ -27,8 +27,7 @@ async def generate_text(file: UploadFile = File(...), text: str = Form(...), db:
     file_name = f"{record_id}.txt"
 
     try:
-        # Завантаження файлу до S3
-        s3_link = upload_to_s3(file.file, file_name)  # Файл передається як file.file
+        s3_link = upload_to_s3(file.file, file_name)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

@@ -48,6 +48,20 @@ services:
       retries: 3
       start_period: 10s
 
+  hload-celery:
+    build:
+      context: ./hload-app
+    command: celery -A app.services.task_service worker --loglevel=info
+    networks:
+      - hload-network
+    depends_on:
+      - hload-backend
+      - hload-redis
+      - hload-postgres
+    environment:
+      <<: *environment-defaults
+    restart: on-failure:5
+
   hload-postgres:
     image: postgres:latest
     container_name: hload-postgres

@@ -5,6 +5,7 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def create_record(db: Session, record_data: dict):
     logger.info(f"Creating a new record with data: {record_data}")
     record = Record(**record_data)
