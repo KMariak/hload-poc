@@ -11,7 +11,7 @@ const App = () => {
     });
     const [loading, setLoading] = useState(false);
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         if (inputText.trim() === "") {
             alert("Please enter some text!");
             return;
@@ -19,18 +19,37 @@ const App = () => {
 
         setLoading(true);
 
-        // Simulate an API call or backend process
-        setTimeout(() => {
-            const data = {
-                id: '12345',
-                link: 'https://s3.example.com/file12345',
-                text: inputText,
-                status: 'done'
-            };
+        try {
+            // Створення форми з файлом та текстом
+            const formData = new FormData();
+            formData.append('text', inputText);
+            formData.append('file', new Blob([inputText], { type: 'text/plain' }), 'file.txt');  // Передаємо текст як файл
 
-            setGeneratedData(data);
+            // Відправка запиту на сервер
+            const response = await fetch('http://localhost:8000/generate/', {  // Використовуємо точний URL бекенду
+                method: 'POST',
+                body: formData,  // Тіло запиту - форма
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to generate');
+            }
+
+            const data = await response.json();
+
+            // Оновлення даних в UI після отримання відповіді
+            setGeneratedData({
+                id: data.id || 'N/A',
+                link: data.link || 'N/A',
+                text: data.text || 'N/A',
+                status: data.status || 'N/A',
+            });
+
+        } catch (error) {
+            alert('Error: ' + error.message);
+        } finally {
             setLoading(false);
-        }, 2000); // Simulate delay of 2 seconds
+        }
     };
 
     return (
