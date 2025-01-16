@@ -26,7 +26,7 @@ const App = () => {
             formData.append('file', new Blob([inputText], { type: 'text/plain' }), 'file.txt');  // Передаємо текст як файл
 
             // Відправка запиту на сервер
-            const response = await fetch('http://localhost:8000/generate/', {  // Використовуємо точний URL бекенду
+            const response = await fetch('http://localhost:8000/generate/', {
                 method: 'POST',
                 body: formData,  // Тіло запиту - форма
             });
@@ -44,6 +44,21 @@ const App = () => {
                 text: data.text || 'N/A',
                 status: data.status || 'N/A',
             });
+
+            // Перевірка статусу через інтервал
+            const checkStatus = async (id) => {
+                const interval = setInterval(async () => {
+                    const resultResponse = await fetch(`http://localhost:8000/records/${id}`);
+                    const result = await resultResponse.json();
+
+                    if (result.status === 'done') {
+                        setGeneratedData(result);  // Оновлення статусу в UI
+                        clearInterval(interval);  // Завершення інтервалу
+                    }
+                }, 3000);  // Перевірка кожні 3 секунди
+            };
+
+            checkStatus(data.id);  // Перевіряємо статус
 
         } catch (error) {
             alert('Error: ' + error.message);
