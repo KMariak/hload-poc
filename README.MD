@@ -10,7 +10,9 @@
 Для запуску прототипу виконайте наступні команди:
 
 git clone git@github.com:KMariak/hload-poc.git
+
 cd hload-poc
+
 docker-compose up --build
 
 Перейдіть за посиланням:
